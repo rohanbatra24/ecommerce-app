@@ -1,6 +1,10 @@
 const express = require('express');
 
+const bodyParser = require('body-parser');
+
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
 	res.send(`
@@ -14,21 +18,8 @@ app.get('/', (req, res) => {
     </div>`);
 });
 
-const bodyParser = () => {
-	//get access to email,password,passconfirm
-	req.on('data', (data) => {
-		const parsed = data.toString('utf8').split('&');
-		const formData = {};
-		for (let pair of parsed) {
-			//array destructuring
-			const [ key, value ] = pair.split('=');
-			formData[key] = value;
-		}
-		console.log(formData);
-	});
-};
-
 app.post('/', (req, res) => {
+	console.log(req.body);
 	res.send('account created');
 });
 
