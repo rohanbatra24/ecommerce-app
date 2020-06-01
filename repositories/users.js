@@ -2,6 +2,10 @@ const fs = require('fs');
 
 const crypto = require('crypto');
 
+const util = require('util');
+
+const scrypt = util.promisify(crypto.scrypt);
+
 class UsersRepository {
 	constructor(filename) {
 		if (!filename) {
@@ -21,15 +25,24 @@ class UsersRepository {
 	}
 
 	async create(attrs) {
+		// attrs = {email: '', password: ''}
+
 		const records = await this.getAll();
 
 		attrs.id = this.randomId();
 
-		records.push(attrs);
+		const salt = crypto.randomBytes(8).toString('hex');
+
+		// using promisify util to return a prmise from scrypt instead of callback
+		const buf = await scrypt(attrs.password, salt, 64);
+
+		const record = { ...attrs, password: `${buf.toString('hex')}.${salt}` };
+
+		records.push(record);
 
 		await this.writeAll(records);
 
-		return attrs;
+		return record;
 	}
 
 	async writeAll(records) {
