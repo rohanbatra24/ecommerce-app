@@ -16,7 +16,7 @@ app.use(
 	})
 );
 
-app.get('/', (req, res) => {
+app.get('/signup', (req, res) => {
 	res.send(`
     <div>   
     Your id is: ${req.session.userId}
@@ -29,7 +29,7 @@ app.get('/', (req, res) => {
     </div>`);
 });
 
-app.post('/', async (req, res) => {
+app.post('/signup', async (req, res) => {
 	console.log(req.body);
 
 	const { email, password, passwordConfirmation } = req.body;
