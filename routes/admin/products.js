@@ -6,16 +6,12 @@ const productsRepo = require('../../repositories/products');
 const productsNewTemplate = require('../../views/admin/products/new');
 const productsIndexTemplate = require('../../views/admin/products/index');
 const productsEditTemplate = require('../../views/admin/products/edit');
-
 const { requireTitle, requirePrice } = require('./validators');
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 router.get('/admin/products', requireAuth, async (req, res) => {
-	if (!req.session.userId) {
-		return res.redirect('/signin');
-	}
 	const products = await productsRepo.getAll();
 	res.send(productsIndexTemplate({ products }));
 });
@@ -31,9 +27,6 @@ router.post(
 	[ requireTitle, requirePrice ],
 	handleErrors(productsNewTemplate),
 	async (req, res) => {
-		if (!req.session.userId) {
-			return res.redirect('/signin');
-		}
 		const image = req.file.buffer.toString('base64');
 		const { title, price } = req.body;
 		await productsRepo.create({ title, price, image });
@@ -55,9 +48,12 @@ router.get('/admin/products/:id/edit', requireAuth, async (req, res) => {
 router.post(
 	'/admin/products/:id/edit',
 	requireAuth,
-	[ requireTitle, requirePrice ],
-	handleErrors(productsNewTemplate),
 	upload.single('image'),
+	[ requireTitle, requirePrice ],
+	handleErrors(productsEditTemplate, async (req) => {
+		const product = await productsRepo.getOne(req.params.id);
+		return { product };
+	}),
 	async (req, res) => {
 		const changes = req.body;
 
