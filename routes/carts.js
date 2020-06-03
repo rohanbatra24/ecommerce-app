@@ -53,8 +53,8 @@ router.get('/cart', async (req, res) => {
 	res.send(cartShowTemplate({ items: cart.items }));
 });
 
-// Receive a GET request to show all items in cart
-
-// Receive a post request to delete an item from a cart
+router.post('/cart/products/delete', async (req, res) => {
+	console.log(req.body.itemId);
+});
 
 module.exports = router;
