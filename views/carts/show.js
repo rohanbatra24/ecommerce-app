@@ -27,7 +27,7 @@ module.exports = ({ items }) => {
                     <i class="fas fa-times"></i>
                   </span>
                 </button>
-              </form>
+              </form> 
             </div>
           </div>
         </div>
